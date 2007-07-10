@@ -1,0 +1,27 @@
+#############################
+# The Berkeley Word Aligner #
+#############################
+
+The Berkeley Word Aligner is a statistical machine translation tool that automatically aligns words in a sentence-aligned parallel corpus.
+
+-------------
+Install & Run
+-------------
+
+The version you have downloaded is primarily intended for people interested in extending or helping develop the aligner. To generate the distribution meant for end users (who just want to align words), you need to compile the package by running ant (http://ant.apache.org/):
+
+  ant
+
+The directory called "distribution" will then contain further instructions on running the tool.
+
+-----------
+Information
+-----------
+
+For more information about the package as a whole, please visit:
+
+  http://nlp.cs.berkeley.edu/pages/wordaligner.html
+
+Information related to the development of this package resides online:
+
+  http://code.google.com/p/berkeleyaligner

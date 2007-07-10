@@ -1,0 +1,55 @@
+## example_syntactic.conf
+## ----------------------
+## This is an example training script for a syntactic HMM
+## alignment model crossed with a standard HMM alignment
+## model in the reverse direction.
+##
+## Increase the iterations and training set size, and
+## you'll have high quality alignments.  THe syntactic
+## HMM improves extraction of tree transducer rules.  
+
+##########################################
+# Training: Defines the training regimen #
+##########################################
+
+forwardModels	MODEL1 SYNTACTIC
+reverseModels	MODEL1 HMM
+mode	JOINT JOINT
+iters	2 2
+
+###############################################
+# Execution: Controls output and program flow #
+###############################################
+
+execDir	output_syntax
+create
+saveParams	true
+numThreads	1
+msPerLine	10000
+alignTraining
+leaveTrainingOnDisk
+# searchForThreshold
+
+#################
+# Language/Data #
+#################
+
+foreignSuffix	f
+englishSuffix	e
+lowercase
+
+# Choose the training sources, which can either be directories or files that list files/directories
+# Note that training on the test set does not peek at the correct answers (no cheating)
+trainSources	example/test example/train
+sentences	MAX
+
+# The test sources must have hand alignments for all sentence pairs
+testSources	example/test
+maxTestSentences	MAX
+offsetTestSentences	0
+
+##############
+# Evaluation #
+##############
+
+competitiveThresholding

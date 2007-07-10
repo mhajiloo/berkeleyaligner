@@ -1,0 +1,113 @@
+#########################
+# Berkeley Word Aligner #
+# Release 1.0           #
+# 07/10/07              #
+#########################
+
+The Berkeley Word Aligner is a statistical machine translation tool that automatically 
+aligns words in a sentence-aligned parallel corpus.
+
+This package draws heavily from the following two papers:
+
+  Percy Liang, Ben Taskar, Dan Klein.  Alignment By Agreement.  NAACL, 2006.
+  http://www.cs.berkeley.edu/~pliang/papers/alignment-naacl2006.pdf
+
+  John DeNero, Dan Klein.  Tailoring Word Alignments to Syntactic Machine Translation.  ACL, 2007.
+  http://www.eecs.berkeley.edu/~denero/research/papers/acl07_denero_syntacticwa.pdf
+
+For more information about the package as a whole, please visit:
+
+  http://nlp.cs.berkeley.edu/pages/wordaligner.html
+
+The source code is maintained online:
+
+  http://code.google.com/p/berkeleyaligner
+  
+The source code for this project is based on the Cross-EM Word Aligner:
+
+  http://www.cs.berkeley.edu/~pliang
+  
+To receive updates, join the announcements mailing list:
+
+  http://groups.google.com/group/berkeleyaligner
+  
+Overview
+========
+This manual will soon describe the full range of features supported by the Berkeley Aligner.  
+Currently, however, it provides only mininal information on how to align a parallel corpus. 
+Check back soon for more. 
+
+Compiling/Installation
+======================
+If you've downloaded the standard distribution, berkeleyaligner-#.#.tar.gz, then no compilation
+or installation should be necessary.  If you've downloaded the source, type "ant".
+
+Package Contents
+================
+berkeleyaligner.jar - The compiled code repository 
+align - A simple shell script to run the aligner
+example.conf - An example configuration file
+example_syntactic.conf - A second example configuration file for syntactic HMMs
+example - A directory of example data from the Hansards corpus
+
+Aligning a Parallel Corpus
+==========================
+(1)  Prepare the training corpus, matching the format and conventions of the "example/train" 
+     directory.  Parallel files designated by common prefixes and contrasting suffixes 
+     (e.g., ".e" and ".f") can span multiple directories.  Make sure all files are UTF-8.
+     The aligner can take care of lowercasing for you, but tokenization is up to you.
+     
+(1s) To train a syntactic HMM alignment model, you also need a third parallel file for each
+     training set pair that contains phrase structure trees.  The suffix of these files must
+     be "{englishSuffix}trees" (e.g., etrees).  We will shortly release a script to create
+     such files using the Berkeley Parser.
+     
+(2)  Create a configuration file, based on example.conf or example_syntactic.conf.
+	 Each line in the configuration contains a field name and a value, separated by a tab.
+	 The configuration file determines the training regimen, source data, output settings, etc.
+
+(3)  Run the jar, for example using either of the following commands:
+	 % ./align example.conf
+	 % java -server -mx1000m -jar berkeleyaligner.jar ++example.conf
+
+(3s) To use a syntactic HMM, substitute example_syntactic.conf for example.conf.  You may also
+     want to increase the memory (-mxXXXXm) to train on a large corpus.
+
+(4)  Interpreting the output:
+	 Everything should be saved to an output directory, which is named by the "execDir" option.
+	 In example.conf, the directory is called "output".
+	 Following the GIZA++ tradition, there are lots of files here, most of which you won't care
+	 about.  The file you typically do want, the aligned training corpus, is called training.e-f.align.
+	
+With the settings in example.conf, two Model 1s will be trained jointly, one in eachdirection, 
+for 2 iterations.  These parameters will be used to train two HMMs jointly for 2 iterations.  
+
+With the settings in example_syntactic.conf, two Model 1s will be trained jointly, one in each
+direction, for 2 iterations.  These parameters will be used to train one syntactic and one 
+classic HMM independently for 2 iterations.  Despite independent training, these models are 
+combined via posterior heuristics at decoding time.
+
+Notes
+=====
+Make sure all your data files are in UTF-8.
+All commands should be run out of the current directory.
+If you want to speed things up, turn off "batchTraining" and allocate lots of memory.
+
+============================================================
+(C) Copyright 2007, Percy Liang and John DeNero
+
+http://www.cs.berkeley.edu/~pliang
+http://www.cs.berkeley.edu/~denero
+http://nlp.cs.berkeley.edu/pages/wordaligner.html
+
+Permission is granted for anyone to copy, use, or modify these programs and
+accompanying documents for purposes of research or education, provided this
+copyright notice is retained, and note is made of any changes that have been
+made.
+
+These programs and documents are distributed without any warranty, express or
+implied.  As the programs were written for research purposes only, they have
+not been tested to the degree that would be advisable in any important
+application.  All use of these programs is entirely at the user's own risk.
+
+============================================================
