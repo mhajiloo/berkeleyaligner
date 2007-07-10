@@ -1,0 +1,66 @@
+<project name="Berkeley Aligner" default="distribute-clean" basedir=".">
+
+	<property name="src" value="./src/" />
+	<property name="build.dir" value="./classes/" />
+
+	<property name="dist.dir" value="./distribution/" />
+	<property name="jarfile" value="berkeleyaligner.jar" />
+
+	<property name="manifest" value="./resources/Manifest.mf" />
+	<property name="dist.readme" value="./resources/distribution_readme.txt" />
+	<property name="dist.conf" value="./resources/example_conf.txt" />
+	<property name="dist.syntactic.conf" value="./resources/example_syntactic_conf.txt" />
+	<property name="dist.runscript" value="./resources/run_script.sh" />
+
+	<property name="example.dir" value="./resources/example/" />
+	<property name="dist.example.dir" value="${dist.dir}/example/" />
+	<property name="doc.dir" value="./documentation/" />
+	<property name="dist.doc.dir" value="${dist.dir}/documentation/" />
+	<property name="tarfile" value="./berkeleyaligner.tar" />
+	<property name="gzipfile" value="${tarfile}.gz" />
+
+	<target name="distribute-clean" depends="clean, distribute" />
+
+	<target name="init-distribute">
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${dist.example.dir}" />
+		<mkdir dir="${dist.doc.dir}" />
+	</target>
+
+	<target name="distribute" depends="compile, init-distribute">
+		<jar destfile="${dist.dir}/${jarfile}" basedir="${build.dir}" manifest="${manifest}" />
+		
+		<copy todir="${dist.example.dir}" overwrite="false">
+			<fileset dir="${example.dir}" />
+		</copy>
+		<copy todir="${dist.doc.dir}" overwrite="false">
+			<fileset dir="${doc.dir}" />
+		</copy>
+		
+		<copy file="${dist.readme}" tofile="${dist.dir}/README" overwrite="false" />
+		<copy file="${dist.conf}" tofile="${dist.dir}/example.conf" overwrite="false" />
+		<copy file="${dist.syntactic.conf}" tofile="${dist.dir}/example_syntactic.conf" overwrite="false" />
+		<copy file="${dist.runscript}" tofile="${dist.dir}/align" overwrite="false" />
+		<chmod file="${dist.dir}/align" perm="755" />
+
+		<tar destfile="${gzipfile}" compression="gzip">
+			<tarfileset prefix="berkeleyaligner" dir="${dist.dir}" />
+		</tar>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.dir}" />
+		<javac srcdir="${src}" destdir="${build.dir}" optimize="on" debug="on">
+			<classpath>
+				<pathelement location="${build.dir}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete file="${gzipfile}" />
+	</target>
+
+</project>
