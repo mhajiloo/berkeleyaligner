@@ -1,1 +1,1 @@
-Welcome to the BerkeleyAligner code repository.  We will be releasing the package on July 7, 2007.
+Welcome to the BerkeleyAligner code repository.  We released the first version on July 10, 2007.  We eagerly await your comments, questions and suggestions.
