@@ -16,10 +16,22 @@
 	<property name="dist.example.dir" value="${dist.dir}/example/" />
 	<property name="doc.dir" value="./documentation/" />
 	<property name="dist.doc.dir" value="${dist.dir}/documentation/" />
-	<property name="tarfile" value="./berkeleyaligner.tar" />
+
+	<property name="distfile" value="./berkeleyaligner" />
+	<property name="tarfile" value="${distfile}.tar" />
 	<property name="gzipfile" value="${tarfile}.gz" />
 
+	<property name="srcfile" value="${distfile}-src" />
+	<property name="srctarfile" value="${srcfile}.tar" />
+	<property name="srcgzipfile" value="${srctarfile}.gz" />
+
 	<target name="distribute-clean" depends="clean, distribute" />
+
+	<target name="package-source" depends="clean">
+		<tar destfile="${srcgzipfile}" compression="gzip">
+			<tarfileset prefix="berkeleyaligner" dir="${basedir}" excludes="private/**"/>
+		</tar>
+	</target>
 
 	<target name="init-distribute">
 		<mkdir dir="${dist.dir}" />
@@ -29,14 +41,14 @@
 
 	<target name="distribute" depends="compile, init-distribute">
 		<jar destfile="${dist.dir}/${jarfile}" basedir="${build.dir}" manifest="${manifest}" />
-		
+
 		<copy todir="${dist.example.dir}" overwrite="false">
 			<fileset dir="${example.dir}" />
 		</copy>
 		<copy todir="${dist.doc.dir}" overwrite="false">
 			<fileset dir="${doc.dir}" />
 		</copy>
-		
+
 		<copy file="${dist.readme}" tofile="${dist.dir}/README" overwrite="false" />
 		<copy file="${dist.conf}" tofile="${dist.dir}/example.conf" overwrite="false" />
 		<copy file="${dist.syntactic.conf}" tofile="${dist.dir}/example_syntactic.conf" overwrite="false" />
