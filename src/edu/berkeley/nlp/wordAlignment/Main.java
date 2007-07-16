@@ -71,7 +71,9 @@ public class Main implements Runnable {
 	public boolean lowercaseWords = false;
 	@Option(gloss = "Don't load and store the training set upfront (slower, but less memory)")
 	public boolean leaveTrainingOnDisk = false;
-
+	@Option(gloss = "Save rejected sentence pairs")
+	public boolean saveRejects = false;
+	
 	// Training regimen
 	@Option(gloss = "Which word alignment model to use in the forward direction.")
 	public ArrayList<ModelT> forwardModels = Lists.newList(ModelT.MODEL1, ModelT.HMM);
