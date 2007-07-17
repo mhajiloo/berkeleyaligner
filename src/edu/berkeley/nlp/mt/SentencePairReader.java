@@ -109,9 +109,13 @@ public class SentencePairReader {
 		public List<SentencePair> asList() {
 			if (pairs != null) return pairs;
 			ArrayList<SentencePair> allPairs = new ArrayList<SentencePair>(Math.max(0, size));
+			int numPairs = 0;
+			LogInfo.track("Loading sentence from: " + sources);
 			for (SentencePair pair : this) {
 				allPairs.add(pair);
+				LogInfo.logs("Loaded %d pairs", ++numPairs);
 			}
+			LogInfo.end_track();
 			return allPairs;
 		}
 
@@ -309,7 +313,10 @@ public class SentencePairReader {
 			}
 		}
 
-		private Iterator<Tree<String>> getTrees(String treeFileName) {
+		private Iterator<Tree<String>> getTreeIterator(String treeFileName) {
+			// TODO This should check for tree formatting and proceed gracefully
+			// Right now, we get an infinite loop with no close paren and undefined
+			// bad behavior with too many close parens.
 			Trees.PennTreeReader treeReader = null;
 			try {
 				treeReader = new Trees.PennTreeReader(IOUtils.openInEasy(treeFileName),
@@ -335,8 +342,8 @@ public class SentencePairReader {
 			englishIn = IOUtils.openInHard(englishFN);
 			frenchIn = IOUtils.openInHard(foreignFN);
 			alIn = IOUtils.openInEasy(alignmentFN);
-			englishTrees = getTrees(englishTreeFN);
-			foreignTrees = getTrees(foreignTreeFN);
+			englishTrees = getTreeIterator(englishTreeFN);
+			foreignTrees = getTreeIterator(foreignTreeFN);
 			loadNext();
 		}
 
