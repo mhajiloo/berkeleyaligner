@@ -39,7 +39,8 @@ public abstract class IterWordAligner<D extends DistortionModel> extends WordAli
 	 * Output files: <filePrefix><modelPrefix>.params.{bin,txt}
 	 */
 	private void saveParams(String filePrefix) {
-		String file = Execution.getFile(filePrefix + modelPrefix + ".params");
+		String relativeFilename = filePrefix + modelPrefix + ".params";
+		String file = Execution.getFile(relativeFilename);
 		String link = Execution.getFile(modelPrefix + ".params");
 		if (file == null) return;
 		track("saveParams(" + file + ")");
@@ -48,13 +49,13 @@ public abstract class IterWordAligner<D extends DistortionModel> extends WordAli
 			// TODO Accessing the word pair stats should be trivial, but requires some refactoring
 			// .... Currently, the WP states cannot be dumped as part of saveParams()
 			params.dump(IOUtils.openOutHard(file + ".txt"), new WordPairStats(), reverse);
-			IOUtils.createSymLink(file + ".txt", link + ".txt");
+			IOUtils.createSymLink(relativeFilename + ".txt", link + ".txt");
 		}
 		end_track();
 		track("Binary");
 		{
 			params.save(file + ".bin");
-			IOUtils.createSymLink(file + ".bin", link + ".bin");
+			IOUtils.createSymLink(relativeFilename + ".bin", link + ".bin");
 			//			params.restrict(evaluator.testSentencePairs, reverse).save(file + "-test.bin");
 		}
 		end_track();

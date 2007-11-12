@@ -13,10 +13,13 @@ import java.util.Map;
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
+import edu.berkeley.nlp.util.WorkQueue;
+import edu.berkeley.nlp.util.WorkQueueReorderer;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.basic.OutputOrderedMap;
+import fig.basic.Pair;
 import fig.basic.StrUtils;
 import fig.basic.String2DoubleMap;
 import fig.exec.Execution;
@@ -166,7 +169,7 @@ public class Evaluator {
 	 * intersection is the output of the intersected model, and the union is the
 	 * union of the two models.
 	 */
-	static void writeAlignments(PairDepot pairs, WordAligner wa, String prefix) {
+	static void writeAlignments(PairDepot pairs, final WordAligner wa, String prefix) {
 		track("Writing directional and union alignments for %d sentences", pairs.size());
 
 		String enSuff = Main.englishSuffix;
@@ -182,33 +185,50 @@ public class Evaluator {
 
 		//		PrintWriter efOut = IOUtils.openOutHard(Execution.getFile(e2fName));
 		//		PrintWriter feOut = IOUtils.openOutHard(Execution.getFile(f2eName));
-		PrintWriter unionE2fOut = IOUtils.openOutHard(Execution.getFile(unionE2fName));
-		PrintWriter unionF2eOut = IOUtils.openOutHard(Execution.getFile(unionF2eName));
-		PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution.getFile(unionName));
-		PrintWriter eInputOut = IOUtils.openOutHard(Execution.getFile(eInput));
-		PrintWriter eTreesOut = IOUtils.openOutHard(Execution.getFile(eTrees));
-		PrintWriter fInputOut = IOUtils.openOutHard(Execution.getFile(fInput));
+		final PrintWriter unionE2fOut = IOUtils.openOutHard(Execution.getFile(unionE2fName));
+		final PrintWriter unionF2eOut = IOUtils.openOutHard(Execution.getFile(unionF2eName));
+		final PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution.getFile(unionName));
+		final PrintWriter eInputOut = IOUtils.openOutHard(Execution.getFile(eInput));
+		final PrintWriter eTreesOut = IOUtils.openOutHard(Execution.getFile(eTrees));
+		final PrintWriter fInputOut = IOUtils.openOutHard(Execution.getFile(fInput));
 
-		int idx = 0;
-		for (SentencePair sp : pairs) {
-			logs("Sentence %d/%d", idx, pairs.size());
-			idx++;
-			//			List<Alignment> a123 = wa.alignSentencePairReturnAll(sp);
-			//			Alignment a1 = a123.get(0); // E->F
-			//			Alignment a2 = a123.get(1); // F->E
-			Alignment a3 = wa.alignSentencePair(sp); // Combined
-			//			if (competitiveThresholding) a3 = competitiveThresholding(a3, trainingThreshold);
+		final int numPairs = pairs.size();
+		
+		// Define output procedure for each sentence
+		final WorkQueueReorderer<Pair<SentencePair, Alignment>> writer;
+		writer = new WorkQueueReorderer<Pair<SentencePair,Alignment>>() {
+			int idx = 0;
+			@Override
+			public void process(Pair<SentencePair, Alignment> queueOutput) {
+				logs("Sentence %d/%d", idx, numPairs);
+				SentencePair sp = queueOutput.getFirst();
+				Alignment a3 = queueOutput.getSecond();
+				
+				// Write stuff to disk
+				a3.writeGIZA(unionE2fOut, idx);
+				a3.reverse().writeGIZA(unionF2eOut, idx);
 
-			//			a1.writeGIZA(efOut, idx);
-			//			a2.reverse().writeGIZA(feOut, idx);
-			a3.writeGIZA(unionE2fOut, idx);
-			a3.reverse().writeGIZA(unionF2eOut, idx);
+				eInputOut.println(StrUtils.join(sp.getEnglishWords(), " "));
+				fInputOut.println(StrUtils.join(sp.getForeignWords(), " "));
+				if (sp.getEnglishTree() != null) eTreesOut.println(sp.getEnglishTree());
 
-			eInputOut.println(StrUtils.join(sp.getEnglishWords(), " "));
-			fInputOut.println(StrUtils.join(sp.getForeignWords(), " "));
-			if (sp.getEnglishTree() != null) eTreesOut.println(sp.getEnglishTree());
-
-			unionPharaohOut.println(a3.outputHard());
+				unionPharaohOut.println(a3.outputHard());
+				idx++;
+			}
+			
+		};
+		
+		// Align each sentence, multi-threading the work
+		WorkQueue wq = new WorkQueue(EMWordAligner.numThreads);
+		int i = 0;
+		for (final SentencePair sp : pairs) {
+			final int idx = i;
+			wq.execute(new Runnable() {
+				public void run() {
+					Alignment a3 = wa.alignSentencePair(sp); // Combined
+					writer.addToProcessQueue(idx, Pair.newPair(sp, a3));
+				}
+			});
 		}
 
 		//		efOut.close();
