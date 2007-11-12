@@ -51,6 +51,7 @@ public abstract class WorkQueueReorderer<T> {
 		while (nextToOutput == -1.0 * pq.getPriority()) {
 			process(pq.next());
 			nextToOutput++;
+			if(pq.isEmpty()) return;
 		}
 	}
 
