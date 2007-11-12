@@ -9,11 +9,13 @@ import static fig.basic.LogInfo.track;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
+import edu.berkeley.nlp.util.WorkQueue;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerSoftUnion;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
 import fig.basic.Fmt;
@@ -50,6 +52,8 @@ public class EMWordAligner extends IterWordAligner<DistortionModel> {
 	public static double priorFraction = 0.0;
 	@Option(gloss = "Number of concurrent threads to use during E-step (set to number of processors).")
 	public static int numThreads = 1;
+	@Option(gloss = "Safe concurrency (gets rid of concurrency warnings at the expense of speed)")
+	public static boolean safeConcurrency = false;
 	@Option(gloss = "Whether to evaluate the model after each training iteration (slower, more memory).")
 	public static boolean evaluateDuringTraining = false;
 
@@ -158,7 +162,8 @@ public class EMWordAligner extends IterWordAligner<DistortionModel> {
 			if (evaluateDuringTraining) {
 				double aer = wa1.evaluator.test(intwa, false).aer;
 				logss("AER 1+2 = " + Fmt.D(aer));
-				aerMap.put(wa1.iter, Fmt.D(wa1.aer) + " " + Fmt.D(wa2.aer) + " " + Fmt.D(aer));
+				aerMap.put(wa1.iter, Fmt.D(wa1.aer) + " " + Fmt.D(wa2.aer) + " "
+						+ Fmt.D(aer));
 				Execution.putOutput("AER", Fmt.D(aer));
 			}
 			end_track();
@@ -203,15 +208,16 @@ public class EMWordAligner extends IterWordAligner<DistortionModel> {
 		logss("Log-likelihood 2 = " + Fmt.D(logLikelihood2));
 	}
 
-	private static void runParallelEStep(PairDepot trainingPairs, final EMWordAligner wa1,
-			final EMWordAligner wa2, final boolean merge) {
+	private static void runParallelEStep(PairDepot trainingPairs,
+			final EMWordAligner wa1, final EMWordAligner wa2, final boolean merge) {
 		int sentenceNumber = 0;
 		final int numPairs = trainingPairs.size();
 
-		ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+		WorkQueue workQueue = new WorkQueue(numThreads);
+		final Semaphore updateSem = new Semaphore(1);
 		for (final SentencePair sp : trainingPairs) {
 			final int sentNumber = ++sentenceNumber;
-			executor.execute(new Runnable() {
+			workQueue.execute(new Runnable() {
 
 				public void run() {
 					logs("Sentence " + sentNumber + "/" + numPairs);
@@ -230,22 +236,22 @@ public class EMWordAligner extends IterWordAligner<DistortionModel> {
 
 					if (merge) expAlign1.merge(expAlign1, expAlign2);
 
-					// M-step (partial)
-					//				wa1.newParams.distortionModel.registerEnglishTree(sp.getEnglishTree());
+					if (safeConcurrency) {
+						try {
+							updateSem.acquire();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 					sps1.updateNewParams(expAlign1, wa1.newParams);
 					sps2.updateNewParams(expAlign2, wa2.newParams);
+					if (safeConcurrency) updateSem.release();
 				}
 
 			});
 		}
-		executor.shutdown();
-		try {
-			while (!executor.awaitTermination(10, TimeUnit.SECONDS)) {}
-		} catch (InterruptedException e) {
-			throw new RuntimeException("E-step interrupted.");
-		}
-		//		logss("Log-likelihood 1 = " + Fmt.D(logLikelihood1));
-		//		logss("Log-likelihood 2 = " + Fmt.D(logLikelihood2));
+		workQueue.finishWork();
 	}
 
 	private void includePriorCounts() {
@@ -256,7 +262,8 @@ public class EMWordAligner extends IterWordAligner<DistortionModel> {
 					String s1 = first.getKey();
 					String s2 = second.getKey();
 					if (newParams.transProbs.containsKey(s1, s2)) {
-						newParams.transProbs.incr(s1, s2, second.getValue() * priorFraction);
+						newParams.transProbs.incr(s1, s2, second.getValue()
+								* priorFraction);
 					}
 				}
 			}

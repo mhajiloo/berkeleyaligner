@@ -2,10 +2,12 @@ package edu.berkeley.nlp.wordAlignment;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
+import fig.basic.LogInfo;
 import fig.basic.NumUtils;
 
 /**
@@ -65,16 +67,27 @@ public abstract class SentencePairState implements Serializable {
 	}
 
 	public void updateTransProbs(ExpAlign expAlign, Model params) {
+//		try {
+//			sem.acquire();
+//		} catch (InterruptedException e1) {
+//			throw new RuntimeException("Translation model update concurrency error");
+//		}
 		for (int j = 0; j < J; j++) {
 			String v = fr(j);
 			for (int i = 0; i <= I; i++) {
 				String u = en(i);
 				double p = expAlign.get(j, i);
-				params.transProbs.incr(u, v, p);
+				try {
+					params.transProbs.incr(u, v, p);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					LogInfo.warning("Translation model update concurrency error");
+				}
 			}
 		}
+//		sem.release();
 	}
 
+	//	private static Semaphore sem = new Semaphore(1);
 	protected List<String> enWords, frWords;
 	protected transient EMWordAligner wa;
 	protected int I; // Length of English and French words

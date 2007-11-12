@@ -139,7 +139,7 @@ public class HMMSentencePairState extends SentencePairState {
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized void updateNewParams(ExpAlign expAlign,
+	public void updateNewParams(ExpAlign expAlign,
 			Model<DistortionModel> params) {
 		updateTransProbs(expAlign, params); // Translation
 		trellis.updateTransitionProbs(toutput, (Model) params); // Transition
@@ -525,7 +525,11 @@ class WATrellis extends Trellis {
 									stateObj2, posterior);
 							posterior = 1;
 						}
-						newDistParams.add(jz, stateObj.i, stateObj2.i, I, posterior);
+						try {
+							newDistParams.add(jz, stateObj.i, stateObj2.i, I, posterior);
+						} catch (ArrayIndexOutOfBoundsException e) {
+							LogInfo.warning("Distortion model update concurrency error: skipping sentence");
+						}
 					}
 				}
 			}

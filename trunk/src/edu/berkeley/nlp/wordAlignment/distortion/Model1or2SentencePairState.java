@@ -86,7 +86,7 @@ public class Model1or2SentencePairState extends SentencePairState {
 	/**
 	 * Update the word aligner's new translation parameters.
 	 */
-	public synchronized void updateNewParams(ExpAlign expAlign, Model model) {
+	public void updateNewParams(ExpAlign expAlign, Model model) {
 		// Translation parameters
 		updateTransProbs(expAlign, model);
 	}

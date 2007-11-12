@@ -6,6 +6,7 @@ import static fig.basic.LogInfo.track;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -362,8 +363,8 @@ public class SentencePairReader {
 				next = null;
 				while (next == null && englishIn.ready() && frenchIn.ready()) {
 					// Check bounds on desired sentences
-					String englishLine = englishIn.readLine();
-					String frenchLine = frenchIn.readLine();
+					String englishLine = englishIn.readLine().trim();
+					String frenchLine = frenchIn.readLine().trim();
 					currSentenceID--;
 
 					// Construct sentence pair
@@ -552,8 +553,14 @@ public class SentencePairReader {
 	}
 
 	private List<String> getBaseFileNamesFromDir(String path) {
-		SuffixFilter filter = new SuffixFilter(englishExtension);
-		List<File> englishFiles = IOUtils.getFilesUnder(path, filter);
+		FileFilter fileFilter = new FileFilter() {
+			FileFilter suffixFilter = new SuffixFilter(englishExtension);
+			public boolean accept(File pathname) {
+				if (pathname.getName().startsWith(".")) return false;
+				return suffixFilter.accept(pathname);
+			}
+		};
+		List<File> englishFiles = IOUtils.getFilesUnder(path, fileFilter);
 		List<String> baseFileNames = new ArrayList<String>();
 		for (File englishFile : englishFiles) {
 			String baseFileName = chop(englishFile.getAbsolutePath(), "." + englishExtension);
@@ -599,20 +606,10 @@ public class SentencePairReader {
 		}
 	}
 
-	// For sentence pairs before offset, just stick null instead of the actual sentence
 	private List<SentencePair> readSentencePairsFromFile(String baseFileName,
 			int maxSentencePairs, Filter<SentencePair> filter) {
 		List<SentencePair> sentencePairs = new ArrayList<SentencePair>();
 		PairIterator pairIterator = getSentencePairsIteratorFromFile(baseFileName, filter);
-
-		// Process offset
-		//		for (int i = 0; i < offset; i++) {
-		//			sentencePairs.add(null);
-		//			if (pairIterator.hasNext())
-		//				pairIterator.skipNext();
-		//			else
-		//				return sentencePairs;
-		//		}
 
 		int numPairs = 0;
 		while (pairIterator.hasNext() && numPairs < maxSentencePairs) {
