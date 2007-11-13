@@ -188,6 +188,7 @@ public class Evaluator {
 		final PrintWriter unionE2fOut = IOUtils.openOutHard(Execution.getFile(unionE2fName));
 		final PrintWriter unionF2eOut = IOUtils.openOutHard(Execution.getFile(unionF2eName));
 		final PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution.getFile(unionName));
+		final PrintWriter unionPharaohOutSoft = IOUtils.openOutHard(Execution.getFile(unionName + "soft"));
 		final PrintWriter eInputOut = IOUtils.openOutHard(Execution.getFile(eInput));
 		final PrintWriter eTreesOut = IOUtils.openOutHard(Execution.getFile(eTrees));
 		final PrintWriter fInputOut = IOUtils.openOutHard(Execution.getFile(fInput));
@@ -207,12 +208,13 @@ public class Evaluator {
 				// Write stuff to disk
 				a3.writeGIZA(unionE2fOut, idx);
 				a3.reverse().writeGIZA(unionF2eOut, idx);
-
+				
 				eInputOut.println(StrUtils.join(sp.getEnglishWords(), " "));
 				fInputOut.println(StrUtils.join(sp.getForeignWords(), " "));
 				if (sp.getEnglishTree() != null) eTreesOut.println(sp.getEnglishTree());
 
 				unionPharaohOut.println(a3.outputHard());
+				unionPharaohOutSoft.println(a3.outputSoft());
 				idx++;
 			}
 			
@@ -222,7 +224,7 @@ public class Evaluator {
 		WorkQueue wq = new WorkQueue(EMWordAligner.numThreads);
 		int i = 0;
 		for (final SentencePair sp : pairs) {
-			final int idx = i;
+			final int idx = i++;
 			wq.execute(new Runnable() {
 				public void run() {
 					Alignment a3 = wa.alignSentencePair(sp); // Combined
@@ -230,12 +232,14 @@ public class Evaluator {
 				}
 			});
 		}
-
+		wq.finishWork();
+		
 		//		efOut.close();
 		//		feOut.close();
 		unionE2fOut.close();
 		unionF2eOut.close();
 		unionPharaohOut.close();
+		unionPharaohOutSoft.close();
 		eInputOut.close();
 		eTreesOut.close();
 		fInputOut.close();
