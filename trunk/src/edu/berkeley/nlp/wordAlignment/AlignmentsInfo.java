@@ -69,6 +69,7 @@ public class AlignmentsInfo implements Serializable {
 			Alignment proposedAlignment = proposedAlignments.get(sentencePair.getSentenceID());
 			proposedAlignment.writeGIZA(txtOut, sentencePair.getSentenceID());
 		}
+		txtOut.close();
 	}
 
 	public void writePharaoh(String file) {
@@ -77,6 +78,7 @@ public class AlignmentsInfo implements Serializable {
 			Alignment proposedAlignment = proposedAlignments.get(sentencePair.getSentenceID());
 			txtOut.println(proposedAlignment.outputHard());
 		}
+		txtOut.close();
 	}
 
 	public void logStats() {
