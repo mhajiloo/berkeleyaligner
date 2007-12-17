@@ -1,6 +1,5 @@
 package edu.berkeley.nlp.util;
 
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -19,34 +18,35 @@ public class WorkQueue {
 	private static final long WAIT_TIME = 10;
 	private ExecutorService executor;
 	private Semaphore sem;
+	private boolean serialExecution;
 
 	public WorkQueue(int numThreads) {
-		executor = Executors.newFixedThreadPool(numThreads);
-		sem = new Semaphore(numThreads);
-	}
-
-	public void submit(Runnable work) {
-		executor.execute(work);
+		if (numThreads == 0) {
+			serialExecution = true;
+		} else {
+			executor = Executors.newFixedThreadPool(numThreads);
+			sem = new Semaphore(numThreads);
+			serialExecution = false;
+		}
 	}
 
 	public void execute(final Runnable work) {
-		try {
-			sem.acquire();
-		} catch (InterruptedException e) {
-			sem.release();
-			throw new RuntimeException(e);
+		if (serialExecution) {
+			work.run();
+		} else {
+			sem.acquireUninterruptibly();
+			executor.execute(new Runnable() {
+
+				public void run() {
+					work.run();
+					sem.release();
+				}
+			});
 		}
-		executor.execute(new Runnable() {
-
-			public void run() {
-				work.run();
-				sem.release();
-			}
-		});
-
 	}
 
 	public void finishWork() {
+		if (serialExecution) return;
 		executor.shutdown();
 		try {
 			int secs = 0;

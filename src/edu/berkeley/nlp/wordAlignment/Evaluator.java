@@ -5,6 +5,7 @@ import static fig.basic.LogInfo.logs;
 import static fig.basic.LogInfo.logss;
 import static fig.basic.LogInfo.track;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
@@ -52,18 +53,22 @@ public class Evaluator {
 		return test(wordAligner, output, searchForThreshold);
 	}
 
-	public Performance test(WordAligner wordAligner, boolean output, boolean evalPRTradeoff) {
+	public Performance test(WordAligner wordAligner, boolean output,
+			boolean evalPRTradeoff) {
 		track("Testing " + wordAligner.getName());
 
 		// Main computation: align sentences!
-		Map<Integer, Alignment> proposed = wordAligner.alignSentencePairs(testSentencePairs);
+		Map<Integer, Alignment> proposed = wordAligner
+				.alignSentencePairs(testSentencePairs);
 
 		// Evaluate performance given fixed decoding parameters
 		Performance mainPerf = eval(testSentencePairs, proposed);
 		mainPerf.bestAER = mainPerf.aer;
 		mainPerf.bestThreshold = EMWordAligner.posteriorDecodingThreshold;
-
-		// Do precision/recall tradeoff: only meaningful if we were using posterior decoding
+		String file = Execution.getFile(wordAligner.modelPrefix);
+		if (output) (new File(file)).mkdir();
+		
+		// Do precision/recall tradeoff
 		if (evalPRTradeoff) {
 			track("Evaluate precision/recall tradeoff");
 			// Get an entire curve
@@ -71,8 +76,8 @@ public class Evaluator {
 					Execution.getFile(wordAligner.modelPrefix + ".PRTradeoff"));
 			for (int i = 0; i < thresholdIntervals; i++) {
 				double threshold = 1.0 * i / thresholdIntervals;
-				Map<Integer, Alignment> thresholded = thresholdAlignments(wordAligner, proposed,
-						threshold);
+				Map<Integer, Alignment> thresholded = thresholdAlignments(wordAligner,
+						proposed, threshold);
 				Performance perf = eval(testSentencePairs, thresholded);
 				postMap.put(threshold, perf.simpleString());
 				logs("Threshold = %f; AER = %f", threshold, perf.aer);
@@ -80,19 +85,22 @@ public class Evaluator {
 					mainPerf.bestAER = perf.aer;
 					mainPerf.bestThreshold = threshold;
 				}
+				if (output) {
+					AlignmentsInfo ainfo = new AlignmentsInfo(wordAligner.getName(),
+							testSentencePairs, thresholded, dictionary);
+					ainfo.writePharaoh(file + "/threshold-" + threshold + ".align");
+				}
 			}
-			logss("Best threshold = %f, AER = %f", mainPerf.bestThreshold, mainPerf.bestAER);
+			logss("Best threshold = %f, AER = %f", mainPerf.bestThreshold,
+					mainPerf.bestAER);
 			end_track();
 		}
 
 		// Output alignments
 		track("Output alignments");
-		String file = Execution.getFile(wordAligner.modelPrefix);
 		if (output && file != null) {
-			//			proposedAlignments = thresholdAlignments(wordAligner, proposedAlignments,
-			//					bestThreshold);
-			AlignmentsInfo ainfo = new AlignmentsInfo(wordAligner.getName(), testSentencePairs,
-					proposed, dictionary);
+			AlignmentsInfo ainfo = new AlignmentsInfo(wordAligner.getName(),
+					testSentencePairs, proposed, dictionary);
 			if (saveAlignmentObjects) ainfo.writeBinary(file + ".alignOutput.bin");
 			ainfo.writeText(file + ".alignOutput.txt");
 			ainfo.writeGIZA(file + ".alignOutput.A3");
@@ -128,7 +136,8 @@ public class Evaluator {
 			int I = sentencePair.I();
 			int J = sentencePair.J();
 
-			Alignment proposedAlignment = proposedAlignments.get(sentencePair.getSentenceID());
+			Alignment proposedAlignment = proposedAlignments.get(sentencePair
+					.getSentenceID());
 			Alignment referenceAlignment = sentencePair.getAlignment();
 
 			// Silently ignore alignments that aren't there
@@ -185,41 +194,45 @@ public class Evaluator {
 
 		//		PrintWriter efOut = IOUtils.openOutHard(Execution.getFile(e2fName));
 		//		PrintWriter feOut = IOUtils.openOutHard(Execution.getFile(f2eName));
-		final PrintWriter unionE2fOut = IOUtils.openOutHard(Execution.getFile(unionE2fName));
-		final PrintWriter unionF2eOut = IOUtils.openOutHard(Execution.getFile(unionF2eName));
-		final PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution.getFile(unionName));
-		final PrintWriter unionPharaohOutSoft = IOUtils.openOutHard(Execution.getFile(unionName + "soft"));
+		final PrintWriter unionE2fOut = IOUtils.openOutHard(Execution
+				.getFile(unionE2fName));
+		final PrintWriter unionF2eOut = IOUtils.openOutHard(Execution
+				.getFile(unionF2eName));
+		final PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution
+				.getFile(unionName));
+		//		final PrintWriter unionPharaohOutSoft = IOUtils.openOutHard(Execution.getFile(unionName + "soft"));
 		final PrintWriter eInputOut = IOUtils.openOutHard(Execution.getFile(eInput));
 		final PrintWriter eTreesOut = IOUtils.openOutHard(Execution.getFile(eTrees));
 		final PrintWriter fInputOut = IOUtils.openOutHard(Execution.getFile(fInput));
 
 		final int numPairs = pairs.size();
-		
+
 		// Define output procedure for each sentence
 		final WorkQueueReorderer<Pair<SentencePair, Alignment>> writer;
-		writer = new WorkQueueReorderer<Pair<SentencePair,Alignment>>() {
+		writer = new WorkQueueReorderer<Pair<SentencePair, Alignment>>() {
 			int idx = 0;
+
 			@Override
 			public void process(Pair<SentencePair, Alignment> queueOutput) {
 				logs("Sentence %d/%d", idx, numPairs);
 				SentencePair sp = queueOutput.getFirst();
 				Alignment a3 = queueOutput.getSecond();
-				
+
 				// Write stuff to disk
 				a3.writeGIZA(unionE2fOut, idx);
 				a3.reverse().writeGIZA(unionF2eOut, idx);
-				
+
 				eInputOut.println(StrUtils.join(sp.getEnglishWords(), " "));
 				fInputOut.println(StrUtils.join(sp.getForeignWords(), " "));
 				if (sp.getEnglishTree() != null) eTreesOut.println(sp.getEnglishTree());
 
 				unionPharaohOut.println(a3.outputHard());
-				unionPharaohOutSoft.println(a3.outputSoft());
+				//				unionPharaohOutSoft.println(a3.outputSoft());
 				idx++;
 			}
-			
+
 		};
-		
+
 		// Align each sentence, multi-threading the work
 		WorkQueue wq = new WorkQueue(EMWordAligner.numThreads);
 		int i = 0;
@@ -233,13 +246,13 @@ public class Evaluator {
 			});
 		}
 		wq.finishWork();
-		
+
 		//		efOut.close();
 		//		feOut.close();
 		unionE2fOut.close();
 		unionF2eOut.close();
 		unionPharaohOut.close();
-		unionPharaohOutSoft.close();
+		//		unionPharaohOutSoft.close();
 		eInputOut.close();
 		eTreesOut.close();
 		fInputOut.close();
