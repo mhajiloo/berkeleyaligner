@@ -1,9 +1,9 @@
-package edu.berkeley.nlp.util;
-
+package edu.berkeley.nlp.concurrent;
 
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
+import edu.berkeley.nlp.util.PriorityQueue;
 
 /**
  *  A reorderer that processes inputs in the order in which
@@ -25,11 +25,7 @@ public abstract class WorkQueueReorderer<T> {
 	public abstract void process(T queueOutput);
 
 	public void addToProcessQueue(int orderIndex, T queueOutput) {
-		try {
-			sem.acquire();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
+		sem.acquireUninterruptibly();
 
 		if (orderIndex == nextToOutput) {
 			nextToOutput++;

@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.berkeley.nlp.concurrent.WorkQueue;
+import edu.berkeley.nlp.concurrent.WorkQueueReorderer;
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
-import edu.berkeley.nlp.util.WorkQueue;
-import edu.berkeley.nlp.util.WorkQueueReorderer;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.basic.Option;
