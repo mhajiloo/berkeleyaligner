@@ -293,7 +293,7 @@ public class Main implements Runnable {
 		// Check for the output directory
 		PrintWriter testfile = IOUtils.openOutEasy(Execution.getFile("test"));
 		if (testfile == null) {
-			String msg = "Files cannot be saved.  Make sure you have specified an execDir or execPoolDir to save your output files.";
+			String msg = "Files cannot be saved.  Make sure you have specified an execDir or execPoolDir to save your output files.  Use -help for more options.";
 			throw Exceptions.bad(msg);
 		}
 		testfile.close();

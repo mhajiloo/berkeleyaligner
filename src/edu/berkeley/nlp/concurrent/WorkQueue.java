@@ -1,4 +1,4 @@
-package edu.berkeley.nlp.util;
+package edu.berkeley.nlp.concurrent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,7 +38,15 @@ public class WorkQueue {
 			executor.execute(new Runnable() {
 
 				public void run() {
-					work.run();
+					try {
+						work.run();
+					} catch (AssertionError e) {
+						LogInfo.error(e);
+						e.printStackTrace();
+					} catch (RuntimeException e) {
+						LogInfo.error(e);
+						e.printStackTrace();
+					}
 					sem.release();
 				}
 			});

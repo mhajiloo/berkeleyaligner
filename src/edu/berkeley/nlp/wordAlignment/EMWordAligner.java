@@ -9,10 +9,10 @@ import static fig.basic.LogInfo.track;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
+import edu.berkeley.nlp.concurrent.WorkQueue;
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
-import edu.berkeley.nlp.util.WorkQueue;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerSoftUnion;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
 import fig.basic.Fmt;
@@ -274,8 +274,8 @@ public class EMWordAligner extends IterWordAligner<DistortionModel> {
 	public Alignment alignSentencePair(SentencePair sp) {
 		SentencePairState sps = newSentencePairState(sp);
 		if (usePosteriorDecoding) {
-			return (new Alignment(sp)).thresholdPosteriors(sps.getPosteriors(reverse),
-					posteriorDecodingThreshold);
+			return (new Alignment(sp, false)).thresholdPosteriors(sps
+					.getPosteriors(reverse), posteriorDecodingThreshold);
 		} else {
 			return sps.getViterbi(reverse);
 		}
