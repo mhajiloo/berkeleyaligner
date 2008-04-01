@@ -5,6 +5,7 @@ package edu.berkeley.nlp.wordAlignment.distortion;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ class SyntacticProfile {
 
 	}
 
-	private static Map<Tree<String>, SyntacticProfile> cache = new HashMap<Tree<String>, SyntacticProfile>();
+	private static Map<Tree<String>, SyntacticProfile> cache = new IdentityHashMap<Tree<String>, SyntacticProfile>();
 
 	Map<Integer, List<Pair<Tree<String>, int[]>>> pathsToLeaf;
 	Map<Tree<String>, Integer> leafPositions;
@@ -73,7 +74,7 @@ class SyntacticProfile {
 		}
 
 		// Map leaves to positions
-		leafPositions = new HashMap<Tree<String>, Integer>();
+		leafPositions = new IdentityHashMap<Tree<String>, Integer>();
 		int pos = 0;
 		for (Tree<String> node : t.getPreOrderTraversal()) {
 			if (node.isPreTerminal()) {
