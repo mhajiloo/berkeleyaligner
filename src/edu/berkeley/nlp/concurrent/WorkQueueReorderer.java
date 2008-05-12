@@ -29,9 +29,9 @@ public abstract class WorkQueueReorderer<T> {
 
 		if (orderIndex == nextToOutput) {
 			nextToOutput++;
+			process(queueOutput);
+			drainQueue();
 			try {
-				process(queueOutput);
-				drainQueue();
 			} catch (Exception e) {
 				System.err.println("WorkQueueReorderer: " + e.getLocalizedMessage());
 				e.printStackTrace();

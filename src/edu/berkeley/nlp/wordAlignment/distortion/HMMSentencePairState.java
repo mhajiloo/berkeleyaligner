@@ -2,7 +2,9 @@ package edu.berkeley.nlp.wordAlignment.distortion;
 
 import static fig.basic.LogInfo.dbg;
 import static fig.basic.LogInfo.error;
+import static fig.basic.LogInfo.warning;
 import static fig.basic.LogInfo.logs;
+
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.EMWordAligner;
@@ -201,7 +203,7 @@ class Trellis {
 							* transWeight;
 
 					if (alpha[j + 1][state2] > 1) {
-						error("alpha(j=%d,state=%s) = %f > 1", j + 1, states.getObject(state2),
+						warning("alpha(j=%d,state=%s) = %f > 1", j + 1, states.getObject(state2),
 								alpha[j + 1][state2]);
 						alpha[j + 1][state2] = 1;
 					}
@@ -239,7 +241,7 @@ class Trellis {
 							* emissionWeights[j][state] * transWeight;
 
 					if (beta[j][state] > 1) {
-						error("beta(j=%d,state=%s) = %f > 1", j, states.getObject(state),
+						warning("beta(j=%d,state=%s) = %f > 1", j, states.getObject(state),
 								beta[j][state]);
 						beta[j][state] = 1;
 					}

@@ -57,6 +57,8 @@ public class Main implements Runnable {
 	public ArrayList<String> testSources = Lists.newList("example/test");
 	@Option(name = "sentences", gloss = "Maximum number of the training sentences to use")
 	public int maxTrainSentences = Integer.MAX_VALUE;
+	@Option(gloss = "Skip this number of the first training sentences")
+	public int offsetTrainingSentences = 0;
 	@Option(gloss = "Maximum number of the test sentences to use")
 	public int maxTestSentences = Integer.MAX_VALUE;
 	@Option(gloss = "Skip this number of the first test sentences")
@@ -73,7 +75,7 @@ public class Main implements Runnable {
 	public boolean leaveTrainingOnDisk = false;
 	@Option(gloss = "Save rejected sentence pairs")
 	public boolean saveRejects = false;
-	
+
 	// Training regimen
 	@Option(gloss = "Which word alignment model to use in the forward direction.")
 	public ArrayList<ModelT> forwardModels = Lists.newList(ModelT.MODEL1, ModelT.HMM);
@@ -100,6 +102,8 @@ public class Main implements Runnable {
 	public boolean saveAlignOutput = true;
 	@Option(gloss = "Produce two GIZA files and a Pharaoh file for translation")
 	public boolean alignTraining = false;
+	@Option(gloss = "Produce posterior alignment weight file when aligning training (lots of disk space)")
+	public static boolean writePosteriors = false;
 	@Option(gloss = "Produce two lexical translation tables for lexical weighting (unsupported)")
 	public boolean saveLexicalWeights = false;
 
@@ -125,7 +129,8 @@ public class Main implements Runnable {
 
 	public static void main(String[] args) {
 		Main main = new Main();
-		Execution.init(args, main, EMWordAligner.class, Evaluator.class, TreeWalkModel.class);
+		Execution.init(args, main, EMWordAligner.class, Evaluator.class,
+				TreeWalkModel.class);
 		main.run();
 		Execution.finish();
 	}
@@ -141,14 +146,16 @@ public class Main implements Runnable {
 
 		// Read (or prepare to read) data
 		LogInfo.track("Preparing Training Data");
-		PairDepot testPairs = spReader.pairDepotFromSources(testSources, offsetTestSentences,
-				maxTestSentences, getTestFilter(), false);
-		PairDepot trainingPairs = spReader.pairDepotFromSources(trainSources, 0,
-				maxTrainSentences, getTrainingFilter(), leaveTrainingOnDisk);
+		PairDepot testPairs = spReader.pairDepotFromSources(testSources,
+				offsetTestSentences, maxTestSentences, getTestFilter(), false);
+		PairDepot trainingPairs = spReader.pairDepotFromSources(trainSources,
+				offsetTrainingSentences, maxTrainSentences, getTrainingFilter(),
+				leaveTrainingOnDisk);
 		LogInfo.end_track();
 
 		String trainSize = "Unknown number of";
-		if (!leaveTrainingOnDisk) trainSize = ((Integer) trainingPairs.size()).toString();
+		if (!leaveTrainingOnDisk)
+			trainSize = ((Integer) trainingPairs.size()).toString();
 		logs("%s training sentences, %d test sentences", trainSize, testPairs.size());
 
 		// Create support objects: dictionary and evaluator
@@ -197,15 +204,16 @@ public class Main implements Runnable {
 						stage + 1, forwardType.toString(), reverseType.toString(), iters);
 			} else if (trainingMode == TrainMode.FORWARD) {
 				b1 = true;
-				LogInfo.track("Training stage %d: %s for %d iterations", stage + 1, forwardType
-						.toString(), iters);
+				LogInfo.track("Training stage %d: %s for %d iterations", stage + 1,
+						forwardType.toString(), iters);
 			} else if (trainingMode == TrainMode.REVERSE) {
 				b2 = true;
-				LogInfo.track("Training stage %d: %s for %d iterations", stage + 1, reverseType
-						.toString(), iters);
+				LogInfo.track("Training stage %d: %s for %d iterations", stage + 1,
+						reverseType.toString(), iters);
 			} else {
 				b1 = b2 = true;
-				LogInfo.track("Training stage %d: %s and %s independently for %d iterations",
+				LogInfo.track(
+						"Training stage %d: %s and %s independently for %d iterations",
 						stage + 1, forwardType.toString(), reverseType.toString(), iters);
 			}
 
@@ -214,8 +222,13 @@ public class Main implements Runnable {
 			distModel2.initUniform();
 			if (stage == 0) {
 				boolean l = loadLexicalModelOnly;
-				if (b1) wa1.initializeModel(loadParamsDir, distModel1, l, false, trainingPairs);
-				if (b2) wa2.initializeModel(loadParamsDir, distModel2, l, true, trainingPairs);
+				if (b1)
+					wa1.initializeModel(loadParamsDir, distModel1, l, false,
+							trainingPairs);
+				if (b2)
+					wa2
+							.initializeModel(loadParamsDir, distModel2, l, true,
+									trainingPairs);
 			} else {
 				if (b1) {
 					wa1.trainingCache = distModel1.getTrainingCache();
@@ -260,14 +273,14 @@ public class Main implements Runnable {
 			LogInfo.end_track();
 		}
 		LogInfo.end_track();
-		
+
 		// Evaluate
 		List<WordAligner> aligners = loadAligners(wa1, wa2);
 		WordAligner bestwa = aligners.get(0);
 
 		if (testPairs.size() > 0) {
 			LogInfo.track("Evaluating %d Aligners", aligners.size());
-			double bestaer = -1;
+			double bestaer = 1;
 			for (WordAligner aligner : aligners) {
 				Performance perf = evaluator.test(aligner, saveAlignOutput);
 				String name = aligner.modelPrefix;
@@ -276,8 +289,8 @@ public class Main implements Runnable {
 				Execution.putOutput("aer-" + name, Fmt.D(perf.aer));
 				Execution.putOutput("prec-" + name, Fmt.D(perf.precision));
 				Execution.putOutput("recall-" + name, Fmt.D(perf.recall));
-				bestwa = (bestaer < perf.aer) ? aligner : bestwa;
-				bestaer = Math.max(perf.aer, bestaer);
+				bestwa = (bestaer < perf.aer) ? bestwa : aligner;
+				bestaer = Math.min(perf.aer, bestaer);
 			}
 
 			// Save parameters and info
@@ -303,7 +316,8 @@ public class Main implements Runnable {
 		getNumStagesAndCheckRegimen();
 		for (ModelT model : reverseModels) {
 			if (model == ModelT.SYNTACTIC) {
-				throw Exceptions.bad("Syntactic reverse models aren't quite supported yet.");
+				throw Exceptions
+						.bad("Syntactic reverse models aren't quite supported yet.");
 			}
 		}
 	}
@@ -351,7 +365,8 @@ public class Main implements Runnable {
 							String[] transwords = translation.split(" ");
 							int len = transwords.length;
 							for (int j = 0; j < len; j++) {
-								dict.incr(words[0].intern(), transwords[j].intern(), 1.0 / len);
+								dict.incr(words[0].intern(), transwords[j].intern(),
+										1.0 / len);
 							}
 						} else {
 							dict.incr(words[0].intern(), translation.intern(), 1);
@@ -433,9 +448,11 @@ public class Main implements Runnable {
 	private int getNumStagesAndCheckRegimen() {
 		// Check input length consistency
 		int k = forwardModels.size();
-		sameCheck(k, reverseModels.size(), "ForwardModels and ReverseModels lengths differ");
+		sameCheck(k, reverseModels.size(),
+				"ForwardModels and ReverseModels lengths differ");
 		sameCheck(k, numIters.size(), "ForwardModels and NumIters lengths differ");
-		sameCheck(k, trainingModes.size(), "ForwardModels and TrainingModes lengths differ");
+		sameCheck(k, trainingModes.size(),
+				"ForwardModels and TrainingModes lengths differ");
 
 		// Check training mode sequence consistency
 		TrainMode prev = TrainMode.JOINT;
@@ -445,16 +462,19 @@ public class Main implements Runnable {
 			if (prev == TrainMode.FORWARD) {
 				monoDirectional = true;
 				if (curr == TrainMode.REVERSE) {
-					throw new InputMismatchException("Reverse training follows forward training");
+					throw new InputMismatchException(
+							"Reverse training follows forward training");
 				}
 			}
 			if (prev == TrainMode.REVERSE) {
 				monoDirectional = true;
 				if (curr == TrainMode.FORWARD) {
-					throw new InputMismatchException("Forward training follows Reverse training");
+					throw new InputMismatchException(
+							"Forward training follows Reverse training");
 				}
 			}
-			boolean biDirectional = curr == TrainMode.BOTH_INDEP || curr == TrainMode.JOINT;
+			boolean biDirectional = curr == TrainMode.BOTH_INDEP
+					|| curr == TrainMode.JOINT;
 			if (monoDirectional && biDirectional) {
 				throw new InputMismatchException(
 						"bidirectional (INDEP/JOINT) training follows monodirectional training");
@@ -465,7 +485,8 @@ public class Main implements Runnable {
 	}
 
 	private void sameCheck(int l1, int l2, String error) {
-		if (l1 != l2) throw new InputMismatchException(error + ": (" + l1 + ", " + l2 + ")");
+		if (l1 != l2)
+			throw new InputMismatchException(error + ": (" + l1 + ", " + l2 + ")");
 	}
 
 	private Filter<SentencePair> getTestFilter() {

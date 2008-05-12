@@ -16,11 +16,11 @@ import edu.berkeley.nlp.concurrent.WorkQueueReorderer;
 import edu.berkeley.nlp.mt.Alignment;
 import edu.berkeley.nlp.mt.SentencePair;
 import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
+import edu.berkeley.nlp.util.Lists;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.basic.OutputOrderedMap;
-import fig.basic.Pair;
 import fig.basic.StrUtils;
 import fig.basic.String2DoubleMap;
 import fig.exec.Execution;
@@ -67,7 +67,7 @@ public class Evaluator {
 		mainPerf.bestThreshold = EMWordAligner.posteriorDecodingThreshold;
 		String file = Execution.getFile(wordAligner.modelPrefix);
 		if (output) (new File(file)).mkdir();
-		
+
 		// Do precision/recall tradeoff
 		if (evalPRTradeoff) {
 			track("Evaluate precision/recall tradeoff");
@@ -178,7 +178,7 @@ public class Evaluator {
 	 * intersection is the output of the intersected model, and the union is the
 	 * union of the two models.
 	 */
-	static void writeAlignments(PairDepot pairs, final WordAligner wa, String prefix) {
+	public static void writeAlignments(PairDepot pairs, final WordAligner wa, String prefix) {
 		track("Writing directional and union alignments for %d sentences", pairs.size());
 
 		String enSuff = Main.englishSuffix;
@@ -200,7 +200,9 @@ public class Evaluator {
 				.getFile(unionF2eName));
 		final PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution
 				.getFile(unionName));
-		//		final PrintWriter unionPharaohOutSoft = IOUtils.openOutHard(Execution.getFile(unionName + "soft"));
+
+		final PrintWriter unionPharaohOutSoft = Main.writePosteriors ? IOUtils
+				.openOutHard(Execution.getFile(unionName + "soft")) : null;
 		final PrintWriter eInputOut = IOUtils.openOutHard(Execution.getFile(eInput));
 		final PrintWriter eTreesOut = IOUtils.openOutHard(Execution.getFile(eTrees));
 		final PrintWriter fInputOut = IOUtils.openOutHard(Execution.getFile(fInput));
@@ -208,17 +210,17 @@ public class Evaluator {
 		final int numPairs = pairs.size();
 
 		// Define output procedure for each sentence
-		final WorkQueueReorderer<Pair<SentencePair, Alignment>> writer;
-		writer = new WorkQueueReorderer<Pair<SentencePair, Alignment>>() {
+		final WorkQueueReorderer<List<Object>> writer;
+		writer = new WorkQueueReorderer<List<Object>>() {
 			int idx = 0;
 
 			@Override
-			public void process(Pair<SentencePair, Alignment> queueOutput) {
+			public void process(List<Object> queueOutput) {
 				logs("Sentence %d/%d", idx, numPairs);
-				SentencePair sp = queueOutput.getFirst();
-				Alignment a3 = queueOutput.getSecond();
+				SentencePair sp = (SentencePair) queueOutput.get(0);
+				Alignment a3 = (Alignment) queueOutput.get(1);
 
-				// Write stuff to disk
+				// Write alignments to disk
 				a3.writeGIZA(unionE2fOut, idx);
 				a3.reverse().writeGIZA(unionF2eOut, idx);
 
@@ -227,7 +229,8 @@ public class Evaluator {
 				if (sp.getEnglishTree() != null) eTreesOut.println(sp.getEnglishTree());
 
 				unionPharaohOut.println(a3.outputHard());
-				//				unionPharaohOutSoft.println(a3.outputSoft());
+				if (Main.writePosteriors) unionPharaohOutSoft.println(a3.outputSoft());
+
 				idx++;
 			}
 
@@ -241,7 +244,7 @@ public class Evaluator {
 			wq.execute(new Runnable() {
 				public void run() {
 					Alignment a3 = wa.alignSentencePair(sp); // Combined
-					writer.addToProcessQueue(idx, Pair.newPair(sp, a3));
+					writer.addToProcessQueue(idx, (List) Lists.newList(sp, a3));
 				}
 			});
 		}
@@ -252,11 +255,11 @@ public class Evaluator {
 		unionE2fOut.close();
 		unionF2eOut.close();
 		unionPharaohOut.close();
-		//		unionPharaohOutSoft.close();
+		if (Main.writePosteriors) unionPharaohOutSoft.close();
 		eInputOut.close();
 		eTreesOut.close();
 		fInputOut.close();
+
 		end_track();
 	}
-
 }
