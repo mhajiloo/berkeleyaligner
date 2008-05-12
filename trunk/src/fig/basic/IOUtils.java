@@ -283,7 +283,8 @@ public class IOUtils {
 		return readObjFile(new File(path));
 	}
 
-	public static Object readObjFile(File path) throws IOException, ClassNotFoundException {
+	public static Object readObjFile(File path) throws IOException,
+			ClassNotFoundException {
 		ObjectInputStream in = openObjIn(path);
 		Object obj = in.readObject();
 		in.close();
@@ -311,7 +312,9 @@ public class IOUtils {
 	public static Object readObjFileHard(File path) {
 		try {
 			return readObjFile(path);
-		} catch (Exception e) {
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}

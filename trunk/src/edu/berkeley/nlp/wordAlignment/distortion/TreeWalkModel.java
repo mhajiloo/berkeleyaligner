@@ -295,7 +295,9 @@ public class TreeWalkModel extends BucketModel {
 		popProbs = (double[][][][]) in.readObject();
 		moveProbs = (double[][][]) in.readObject();
 		stateMapper = (StateMapper) in.readObject();
-		tagMapper = (TagMapper) in.readObject();
+		tagMapper = (TagMapper) in.readObject(); 
+		moveSums = null;
+		pushSums = null;
 
 		// Check for push probabilities (not terribly safe)
 		try {

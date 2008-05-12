@@ -1,11 +1,14 @@
 package edu.berkeley.nlp.mt;
 
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import edu.berkeley.nlp.syntax.Tree;
+import edu.berkeley.nlp.syntax.Trees;
+import edu.berkeley.nlp.util.Lists;
 import fig.basic.StrUtils;
 
 /**
@@ -95,7 +98,8 @@ public class SentencePair implements Serializable {
 	}
 
 	// Return the set of words used in these sentences.
-	public static Set<String> getWordSet(List<SentencePair> sentencePairs, boolean isForeign) {
+	public static Set<String> getWordSet(List<SentencePair> sentencePairs,
+			boolean isForeign) {
 		Set<String> set = new HashSet<String>();
 		for (SentencePair sp : sentencePairs) {
 			List<String> words = isForeign ? sp.getForeignWords() : sp.getEnglishWords();
@@ -106,8 +110,8 @@ public class SentencePair implements Serializable {
 	}
 
 	public SentencePair chop(int i1, int i2, int j1, int j2) {
-		return new SentencePair(ID, sourceFile, englishWords.subList(i1, i2), foreignWords
-				.subList(j1, j2));
+		return new SentencePair(ID, sourceFile, englishWords.subList(i1, i2),
+				foreignWords.subList(j1, j2));
 	}
 
 	public Tree<String> getEnglishTree() {
@@ -170,5 +174,26 @@ public class SentencePair implements Serializable {
 		sbuf.append("Alignment:\n");
 		sbuf.append(alignment);
 		return sbuf.toString();
+	}
+
+	public static SentencePair getSampleSentencePair() {
+		String p = "(S (NP (DT the) (NNS jobs)) (VP (VBP are) (ADJP (NN career) (VBN oriented))) (. .))";
+		Trees.PennTreeReader treeReader = new Trees.PennTreeReader(new StringReader(p));
+		Tree<String> tree = treeReader.next();
+		List<String> en = tree.getYield();
+		List<String> fr = Lists.newList("les", "emplois", "sont", "axes", "sur", "la",
+				"carriere", ".");
+		SentencePair sp = new SentencePair(0, "", en, fr);
+		sp.setEnglishTree(tree);
+		Alignment a = new Alignment(en, fr);
+		a.addAlignment(0, 0);
+		a.addAlignment(1, 1);
+		a.addAlignment(2, 2);
+		a.addAlignment(3, 6);
+		a.addAlignment(4, 3);
+		a.addAlignment(5, 7);
+		//		a.addAlignment(0, 5);
+		sp.setAlignment(a);
+		return sp;
 	}
 }

@@ -608,17 +608,17 @@ public class Alignment implements Serializable {
 		if (soft) {
 			for (Pair<Integer, Integer> pair : strengths.keySet()) {
 				double strength = strengths.get(pair);
-				sbuf.append((pair.getFirst() + 1) + "-" + (pair.getSecond() + 1) + "-"
+				sbuf.append((pair.getSecond()) + "-" + (pair.getFirst()) + "-"
 						+ strength);
 				sbuf.append(" ");
 			}
 		} else {
 			for (Pair<Integer, Integer> pair : sureAlignments) {
-				sbuf.append((pair.getFirst() + 1) + "-" + (pair.getSecond() + 1) + " ");
+				sbuf.append((pair.getSecond()) + "-" + (pair.getFirst()) + " ");
 			}
 			for (Pair<Integer, Integer> pair : possibleAlignments) {
 				if (!sureAlignments.contains(pair)) {
-					sbuf.append((pair.getFirst() + 1) + "-" + (pair.getSecond() + 1)
+					sbuf.append((pair.getSecond()) + "-" + (pair.getFirst())
 							+ "-P ");
 				}
 			}

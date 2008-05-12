@@ -1,6 +1,7 @@
 package edu.berkeley.nlp.wordAlignment.distortion;
 
 import static fig.basic.LogInfo.error;
+import static fig.basic.LogInfo.warning;
 
 /**
  * Expected counts under a first order model.
@@ -21,8 +22,8 @@ public class HMMExpAlign extends Model1ExpAlign {
 				WAState stateObj = (WAState) output.trellis.states.getObject(state);
 
 				double posterior = output.getNodePosterior(j, state);
-				if (!(posterior <= 1 + 1e-10)) {
-					error("expAlign(j=%d, state=%s) = %f > 1", j, stateObj, posterior);
+				if (!(posterior <= 1 + 1e-5)) {
+					warning("expAlign(j=%d, state=%s) = %f > 1", j, stateObj, posterior);
 					posterior = 0;
 				}
 				if (posterior == 0) continue;
