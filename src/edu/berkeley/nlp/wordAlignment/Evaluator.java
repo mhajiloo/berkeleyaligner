@@ -1,9 +1,9 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.end_track;
-import static fig.basic.LogInfo.logs;
-import static fig.basic.LogInfo.logss;
-import static fig.basic.LogInfo.track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.end_track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logss;
+import static edu.berkeley.nlp.wa.basic.LogInfo.track;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -11,19 +11,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.berkeley.nlp.concurrent.WorkQueue;
-import edu.berkeley.nlp.concurrent.WorkQueueReorderer;
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
-import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
-import edu.berkeley.nlp.util.Lists;
-import fig.basic.IOUtils;
-import fig.basic.LogInfo;
-import fig.basic.Option;
-import fig.basic.OutputOrderedMap;
-import fig.basic.StrUtils;
-import fig.basic.String2DoubleMap;
-import fig.exec.Execution;
+import edu.berkeley.nlp.wa.basic.IOUtils;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.Option;
+import edu.berkeley.nlp.wa.basic.OutputOrderedMap;
+import edu.berkeley.nlp.wa.basic.StrUtils;
+import edu.berkeley.nlp.wa.basic.String2DoubleMap;
+import edu.berkeley.nlp.wa.concurrent.WorkQueue;
+import edu.berkeley.nlp.wa.concurrent.WorkQueueReorderer;
+import edu.berkeley.nlp.wa.exec.Execution;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePairReader.PairDepot;
+import edu.berkeley.nlp.wa.util.Lists;
 
 /**
  * The evaluator can both test the a model and search for its optimal

@@ -1,24 +1,24 @@
 package edu.berkeley.nlp.wordAlignment.distortion;
 
-import static fig.basic.LogInfo.dbg;
-import static fig.basic.LogInfo.error;
-import static fig.basic.LogInfo.warning;
-import static fig.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.dbg;
+import static edu.berkeley.nlp.wa.basic.LogInfo.error;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.warning;
 
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.basic.DoubleVec;
+import edu.berkeley.nlp.wa.basic.Fmt;
+import edu.berkeley.nlp.wa.basic.Indexer;
+import edu.berkeley.nlp.wa.basic.IntVec;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.NumUtils;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.EMWordAligner;
 import edu.berkeley.nlp.wordAlignment.ExpAlign;
 import edu.berkeley.nlp.wordAlignment.Main;
 import edu.berkeley.nlp.wordAlignment.Model;
 import edu.berkeley.nlp.wordAlignment.SentencePairState;
 import edu.berkeley.nlp.wordAlignment.distortion.FirstOrderModel.DistortionParameters;
-import fig.basic.DoubleVec;
-import fig.basic.Fmt;
-import fig.basic.Indexer;
-import fig.basic.IntVec;
-import fig.basic.LogInfo;
-import fig.basic.NumUtils;
 
 /**
  * The HMM model (Vogel, 1996). The HMM model is a model of P(a, f | e) that

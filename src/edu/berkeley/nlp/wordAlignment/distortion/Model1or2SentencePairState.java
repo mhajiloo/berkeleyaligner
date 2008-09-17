@@ -2,14 +2,14 @@ package edu.berkeley.nlp.wordAlignment.distortion;
 
 import java.util.List;
 
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.EMWordAligner;
 import edu.berkeley.nlp.wordAlignment.ExpAlign;
 import edu.berkeley.nlp.wordAlignment.Main;
 import edu.berkeley.nlp.wordAlignment.Model;
 import edu.berkeley.nlp.wordAlignment.SentencePairState;
-import fig.basic.LogInfo;
 
 /**
  * Inference for position models

@@ -1,9 +1,9 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.end_track;
-import static fig.basic.LogInfo.logs;
-import static fig.basic.LogInfo.stdout;
-import static fig.basic.LogInfo.track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.end_track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.stdout;
+import static edu.berkeley.nlp.wa.basic.LogInfo.track;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.berkeley.nlp.mt.SentencePair;
-import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
-import fig.basic.IOUtils;
-import fig.basic.ListUtils;
-import fig.basic.LogInfo;
-import fig.basic.String2DoubleMap;
-import fig.basic.StringDoubleMap;
+import edu.berkeley.nlp.wa.basic.IOUtils;
+import edu.berkeley.nlp.wa.basic.ListUtils;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.String2DoubleMap;
+import edu.berkeley.nlp.wa.basic.StringDoubleMap;
+import edu.berkeley.nlp.wa.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePairReader.PairDepot;
 
 /** Stores statistics about English and Foreign words.
  * Importantly, it knows about all pairs of English/Foreign words

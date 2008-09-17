@@ -2,7 +2,7 @@ package edu.berkeley.nlp.wordAlignment.distortion;
 
 import java.io.Serializable;
 
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 
 /**
  * A distortion model that conditions upon the last position: P(i|h, I, state)

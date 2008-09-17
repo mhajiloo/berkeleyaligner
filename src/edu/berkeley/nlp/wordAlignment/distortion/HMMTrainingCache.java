@@ -3,7 +3,7 @@ package edu.berkeley.nlp.wordAlignment.distortion;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.Model;
 import edu.berkeley.nlp.wordAlignment.TrainingCache;
 

@@ -1,18 +1,18 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.stdout;
+import static edu.berkeley.nlp.wa.basic.LogInfo.stdout;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.basic.BigStatFig;
+import edu.berkeley.nlp.wa.basic.IOUtils;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
 import edu.berkeley.nlp.wordAlignment.distortion.IBMModel1;
 import edu.berkeley.nlp.wordAlignment.distortion.StateMapper;
-import fig.basic.BigStatFig;
-import fig.basic.IOUtils;
-import fig.basic.LogInfo;
 
 /**
  * A directional alignment model with distortion and translation components
