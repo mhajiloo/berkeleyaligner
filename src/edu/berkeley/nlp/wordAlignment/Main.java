@@ -24,6 +24,7 @@ import edu.berkeley.nlp.wa.syntax.Trees;
 import edu.berkeley.nlp.wa.util.Filter;
 import edu.berkeley.nlp.wa.util.Filters;
 import edu.berkeley.nlp.wa.util.Lists;
+import edu.berkeley.nlp.wa.util.Maxer;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerCompetitiveThresholding;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerHardIntersect;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerHardUnion;
@@ -280,7 +281,7 @@ public class Main implements Runnable {
 
 		if (testPairs.size() > 0) {
 			LogInfo.track("Evaluating %d Aligners", aligners.size());
-			double bestaer = 1;
+			Maxer<WordAligner> maxer = new Maxer<WordAligner>();
 			for (WordAligner aligner : aligners) {
 				Performance perf = evaluator.test(aligner, saveAlignOutput);
 				String name = aligner.modelPrefix;
@@ -289,9 +290,9 @@ public class Main implements Runnable {
 				Execution.putOutput("aer-" + name, Fmt.D(perf.aer));
 				Execution.putOutput("prec-" + name, Fmt.D(perf.precision));
 				Execution.putOutput("recall-" + name, Fmt.D(perf.recall));
-				bestwa = (bestaer < perf.aer) ? bestwa : aligner;
-				bestaer = Math.min(perf.aer, bestaer);
+				maxer.observe(aligner, -1 * perf.bestAER); // Minimize AER
 			}
+			bestwa = maxer.argMax();
 
 			// Save parameters and info
 			Evaluator.writeAlignments(testPairs, bestwa, "testset");
