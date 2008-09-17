@@ -1,6 +1,6 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,14 +9,21 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
-import edu.berkeley.nlp.mt.SentencePair;
-import edu.berkeley.nlp.mt.SentencePairReader;
-import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
-import edu.berkeley.nlp.syntax.Tree;
-import edu.berkeley.nlp.syntax.Trees;
-import edu.berkeley.nlp.util.Filter;
-import edu.berkeley.nlp.util.Filters;
-import edu.berkeley.nlp.util.Lists;
+import edu.berkeley.nlp.wa.basic.Exceptions;
+import edu.berkeley.nlp.wa.basic.Fmt;
+import edu.berkeley.nlp.wa.basic.IOUtils;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.Option;
+import edu.berkeley.nlp.wa.basic.String2DoubleMap;
+import edu.berkeley.nlp.wa.exec.Execution;
+import edu.berkeley.nlp.wa.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePairReader;
+import edu.berkeley.nlp.wa.mt.SentencePairReader.PairDepot;
+import edu.berkeley.nlp.wa.syntax.Tree;
+import edu.berkeley.nlp.wa.syntax.Trees;
+import edu.berkeley.nlp.wa.util.Filter;
+import edu.berkeley.nlp.wa.util.Filters;
+import edu.berkeley.nlp.wa.util.Lists;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerCompetitiveThresholding;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerHardIntersect;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerHardUnion;
@@ -30,13 +37,6 @@ import edu.berkeley.nlp.wordAlignment.distortion.StringDistanceModel;
 import edu.berkeley.nlp.wordAlignment.distortion.TreeWalkModel;
 import edu.berkeley.nlp.wordAlignment.distortion.StateMapper.EndsStateMapper;
 import edu.berkeley.nlp.wordAlignment.distortion.StateMapper.SingleStateMapper;
-import fig.basic.Exceptions;
-import fig.basic.Fmt;
-import fig.basic.IOUtils;
-import fig.basic.LogInfo;
-import fig.basic.Option;
-import fig.basic.String2DoubleMap;
-import fig.exec.Execution;
 
 /**
  * Entry point for word alignment.

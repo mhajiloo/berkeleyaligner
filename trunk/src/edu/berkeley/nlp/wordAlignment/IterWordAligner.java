@@ -1,13 +1,13 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.end_track;
-import static fig.basic.LogInfo.logs;
-import static fig.basic.LogInfo.printProgStatus;
-import static fig.basic.LogInfo.track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.end_track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.printProgStatus;
+import static edu.berkeley.nlp.wa.basic.LogInfo.track;
+import edu.berkeley.nlp.wa.basic.IOUtils;
+import edu.berkeley.nlp.wa.basic.OutputOrderedMap;
+import edu.berkeley.nlp.wa.exec.Execution;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
-import fig.basic.IOUtils;
-import fig.basic.OutputOrderedMap;
-import fig.exec.Execution;
 
 /**
  * WordAligner with parameters which are trained via some number of iterations.

@@ -1,7 +1,7 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.logs;
-import static fig.basic.LogInfo.logss;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logss;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.AlignmentRenderer;
-import edu.berkeley.nlp.mt.SentencePair;
-import fig.basic.BigStatFig;
-import fig.basic.Fmt;
-import fig.basic.IOUtils;
-import fig.basic.Option;
-import fig.basic.Pair;
-import fig.basic.String2DoubleMap;
-import fig.exec.Execution;
+import edu.berkeley.nlp.wa.basic.BigStatFig;
+import edu.berkeley.nlp.wa.basic.Fmt;
+import edu.berkeley.nlp.wa.basic.IOUtils;
+import edu.berkeley.nlp.wa.basic.Option;
+import edu.berkeley.nlp.wa.basic.Pair;
+import edu.berkeley.nlp.wa.basic.String2DoubleMap;
+import edu.berkeley.nlp.wa.exec.Execution;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.AlignmentRenderer;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 
 /**
  * A repository for induced alignments and their gold counterparts.

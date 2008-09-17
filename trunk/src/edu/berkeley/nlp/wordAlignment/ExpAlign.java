@@ -1,6 +1,6 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
 
 /**
  * Expected links in an alignment (soft counts)

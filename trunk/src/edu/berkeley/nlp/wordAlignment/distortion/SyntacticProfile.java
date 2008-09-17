@@ -9,9 +9,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.berkeley.nlp.syntax.Tree;
+import edu.berkeley.nlp.wa.basic.Pair;
+import edu.berkeley.nlp.wa.syntax.Tree;
 import edu.berkeley.nlp.wordAlignment.distortion.TreeWalkModel.TransType;
-import fig.basic.Pair;
 
 /**
  * Computes paths through the syntax tree from each pair of positions in a sentence.

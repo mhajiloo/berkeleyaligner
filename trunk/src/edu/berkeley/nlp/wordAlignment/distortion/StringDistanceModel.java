@@ -1,6 +1,6 @@
 package edu.berkeley.nlp.wordAlignment.distortion;
 
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.TrainingCache;
 
 /**

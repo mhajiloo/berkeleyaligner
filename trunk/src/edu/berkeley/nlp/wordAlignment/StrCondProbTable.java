@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.berkeley.nlp.mt.SentencePair;
-import fig.basic.BigStatFig;
-import fig.basic.Fmt;
-import fig.basic.FullStatFig;
-import fig.basic.LogInfo;
-import fig.basic.NumUtils;
-import fig.basic.Pair;
-import fig.basic.String2DoubleMap;
-import fig.basic.StringDoubleMap;
+import edu.berkeley.nlp.wa.basic.BigStatFig;
+import edu.berkeley.nlp.wa.basic.Fmt;
+import edu.berkeley.nlp.wa.basic.FullStatFig;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.NumUtils;
+import edu.berkeley.nlp.wa.basic.Pair;
+import edu.berkeley.nlp.wa.basic.String2DoubleMap;
+import edu.berkeley.nlp.wa.basic.StringDoubleMap;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 
 /**
  * P(f|e) as a table in memory

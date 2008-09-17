@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.NumUtils;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
-import fig.basic.LogInfo;
-import fig.basic.NumUtils;
 
 /**
  * Performs operations with respect to a particular pair of aligned sentences.

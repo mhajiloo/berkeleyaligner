@@ -3,8 +3,8 @@ package edu.berkeley.nlp.wordAlignment.distortion;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.berkeley.nlp.mt.SentencePair;
-import edu.berkeley.nlp.syntax.Tree;
+import edu.berkeley.nlp.wa.mt.SentencePair;
+import edu.berkeley.nlp.wa.syntax.Tree;
 import edu.berkeley.nlp.wordAlignment.TrainingCache;
 
 /**

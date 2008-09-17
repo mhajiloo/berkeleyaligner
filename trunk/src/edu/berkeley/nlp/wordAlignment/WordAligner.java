@@ -1,8 +1,8 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.end_track;
-import static fig.basic.LogInfo.logs;
-import static fig.basic.LogInfo.track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.end_track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.track;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 
 /**
  * WordAligners have one method: alignSentencePair, which takes a sentence

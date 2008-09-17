@@ -2,11 +2,11 @@ package edu.berkeley.nlp.wordAlignment.combine;
 
 import java.util.List;
 
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
+import edu.berkeley.nlp.wa.basic.ListUtils;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
 import edu.berkeley.nlp.wordAlignment.EMWordAligner;
 import edu.berkeley.nlp.wordAlignment.WordAligner;
-import fig.basic.ListUtils;
 
 /**
  * A foundation for aligners that combine two directional alignments

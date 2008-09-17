@@ -10,14 +10,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import edu.berkeley.nlp.mt.SentencePair;
-import edu.berkeley.nlp.syntax.Tree;
-import edu.berkeley.nlp.util.ArrayUtil;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.NumUtils;
+import edu.berkeley.nlp.wa.basic.Option;
+import edu.berkeley.nlp.wa.mt.SentencePair;
+import edu.berkeley.nlp.wa.syntax.Tree;
+import edu.berkeley.nlp.wa.util.ArrayUtil;
 import edu.berkeley.nlp.wordAlignment.TrainingCache;
 import edu.berkeley.nlp.wordAlignment.distortion.SyntacticProfile.Transition;
-import fig.basic.LogInfo;
-import fig.basic.NumUtils;
-import fig.basic.Option;
 
 /**
  * The TreeWalk distortion model is the syntax sensitive model described in 

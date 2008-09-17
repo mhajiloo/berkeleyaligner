@@ -1,28 +1,28 @@
 package edu.berkeley.nlp.wordAlignment;
 
-import static fig.basic.LogInfo.end_track;
-import static fig.basic.LogInfo.logs;
-import static fig.basic.LogInfo.logss;
-import static fig.basic.LogInfo.stdout;
-import static fig.basic.LogInfo.track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.end_track;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logs;
+import static edu.berkeley.nlp.wa.basic.LogInfo.logss;
+import static edu.berkeley.nlp.wa.basic.LogInfo.stdout;
+import static edu.berkeley.nlp.wa.basic.LogInfo.track;
 
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import edu.berkeley.nlp.concurrent.WorkQueue;
-import edu.berkeley.nlp.mt.Alignment;
-import edu.berkeley.nlp.mt.SentencePair;
-import edu.berkeley.nlp.mt.SentencePairReader.PairDepot;
+import edu.berkeley.nlp.wa.basic.Fmt;
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.Option;
+import edu.berkeley.nlp.wa.basic.OutputOrderedMap;
+import edu.berkeley.nlp.wa.basic.StopWatch;
+import edu.berkeley.nlp.wa.basic.String2DoubleMap;
+import edu.berkeley.nlp.wa.basic.StringDoubleMap;
+import edu.berkeley.nlp.wa.concurrent.WorkQueue;
+import edu.berkeley.nlp.wa.exec.Execution;
+import edu.berkeley.nlp.wa.mt.Alignment;
+import edu.berkeley.nlp.wa.mt.SentencePair;
+import edu.berkeley.nlp.wa.mt.SentencePairReader.PairDepot;
 import edu.berkeley.nlp.wordAlignment.combine.WordAlignerSoftUnion;
 import edu.berkeley.nlp.wordAlignment.distortion.DistortionModel;
-import fig.basic.Fmt;
-import fig.basic.LogInfo;
-import fig.basic.Option;
-import fig.basic.OutputOrderedMap;
-import fig.basic.StopWatch;
-import fig.basic.String2DoubleMap;
-import fig.basic.StringDoubleMap;
-import fig.exec.Execution;
 
 /**
  * Generic template for the EM-based IBM models.

@@ -6,9 +6,9 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+import edu.berkeley.nlp.wa.basic.LogInfo;
+import edu.berkeley.nlp.wa.basic.NumUtils;
 import edu.berkeley.nlp.wordAlignment.SentencePairState.Factory;
-import fig.basic.LogInfo;
-import fig.basic.NumUtils;
 
 /**
  * The BucketModel is a standard bucket-based HMM implementation
