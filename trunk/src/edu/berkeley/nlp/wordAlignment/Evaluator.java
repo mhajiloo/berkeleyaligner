@@ -26,8 +26,8 @@ import edu.berkeley.nlp.wa.mt.SentencePairReader.PairDepot;
 import edu.berkeley.nlp.wa.util.Lists;
 
 /**
- * The evaluator can both test the a model and search for its optimal
- * posterior threshold assuming posterior decoding.
+ * The evaluator can both test the a model and search for its optimal posterior
+ * threshold assuming posterior decoding.
  */
 public class Evaluator {
 	@Option(gloss = "Evaluate using line search")
@@ -53,8 +53,7 @@ public class Evaluator {
 		return test(wordAligner, output, searchForThreshold);
 	}
 
-	public Performance test(WordAligner wordAligner, boolean output,
-			boolean evalPRTradeoff) {
+	public Performance test(WordAligner wordAligner, boolean output, boolean evalPRTradeoff) {
 		track("Testing " + wordAligner.getName());
 
 		// Main computation: align sentences!
@@ -91,8 +90,8 @@ public class Evaluator {
 					ainfo.writePharaoh(file + "/threshold-" + threshold + ".align");
 				}
 			}
-			logss("Best threshold = %f, AER = %f", mainPerf.bestThreshold,
-					mainPerf.bestAER);
+			logss("Best threshold = %f, AER = %f", mainPerf.bestThreshold, mainPerf.bestAER);
+			
 			end_track();
 		}
 
@@ -129,9 +128,9 @@ public class Evaluator {
 			Map<Integer, Alignment> proposedAlignments) {
 		Performance perf = new Performance();
 
-		//int idx = 0;
+		// int idx = 0;
 		for (SentencePair sentencePair : testSentencePairs) {
-			//logs("Sentence %d/%d", idx++, testSentencePairs.size());
+			// logs("Sentence %d/%d", idx++, testSentencePairs.size());
 
 			int I = sentencePair.I();
 			int J = sentencePair.J();
@@ -171,20 +170,19 @@ public class Evaluator {
 	}
 
 	/**
-	 * This produces two sets of alignments
-	 * which look like they were produced by GIZA and one that looks like it
-	 * was produced by the Pharaoh training scripts. These alignments will be used
-	 * to construct phrases. The output should have the property that the
-	 * intersection is the output of the intersected model, and the union is the
-	 * union of the two models.
+	 * This produces two sets of alignments which look like they were produced
+	 * by GIZA and one that looks like it was produced by the Pharaoh training
+	 * scripts. These alignments will be used to construct phrases. The output
+	 * should have the property that the intersection is the output of the
+	 * intersected model, and the union is the union of the two models.
 	 */
 	public static void writeAlignments(PairDepot pairs, final WordAligner wa, String prefix) {
 		track("Writing directional and union alignments for %d sentences", pairs.size());
 
 		String enSuff = Main.englishSuffix;
 		String frSuff = Main.foreignSuffix;
-		//		String e2fName = "training." + enSuff + "2" + frSuff + ".A3";
-		//		String f2eName = "training." + frSuff + "2" + enSuff + ".A3";
+		// String e2fName = "training." + enSuff + "2" + frSuff + ".A3";
+		// String f2eName = "training." + frSuff + "2" + enSuff + ".A3";
 		String unionE2fName = prefix + "." + enSuff + "-" + frSuff + ".A3";
 		String unionF2eName = prefix + "." + frSuff + "-" + enSuff + ".A3";
 		String unionName = prefix + "." + enSuff + "-" + frSuff + ".align";
@@ -192,12 +190,12 @@ public class Evaluator {
 		String eTrees = prefix + "." + enSuff + "Trees.txt";
 		String fInput = prefix + "." + frSuff + "Input.txt";
 
-		//		PrintWriter efOut = IOUtils.openOutHard(Execution.getFile(e2fName));
-		//		PrintWriter feOut = IOUtils.openOutHard(Execution.getFile(f2eName));
-		final PrintWriter unionE2fOut = IOUtils.openOutHard(Execution
-				.getFile(unionE2fName));
-		final PrintWriter unionF2eOut = IOUtils.openOutHard(Execution
-				.getFile(unionF2eName));
+		// PrintWriter efOut = IOUtils.openOutHard(Execution.getFile(e2fName));
+		// PrintWriter feOut = IOUtils.openOutHard(Execution.getFile(f2eName));
+		final PrintWriter unionE2fOut = IOUtils
+				.openOutHard(Execution.getFile(unionE2fName));
+		final PrintWriter unionF2eOut = IOUtils
+				.openOutHard(Execution.getFile(unionF2eName));
 		final PrintWriter unionPharaohOut = IOUtils.openOutHard(Execution
 				.getFile(unionName));
 
@@ -250,8 +248,8 @@ public class Evaluator {
 		}
 		wq.finishWork();
 
-		//		efOut.close();
-		//		feOut.close();
+		// efOut.close();
+		// feOut.close();
 		unionE2fOut.close();
 		unionF2eOut.close();
 		unionPharaohOut.close();
