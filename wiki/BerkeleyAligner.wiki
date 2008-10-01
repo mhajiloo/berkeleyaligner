@@ -1,1 +1,2 @@
-Welcome to the BerkeleyAligner code repository.  We released the first version on July 10, 2007.  We eagerly await your comments, questions and suggestions.
+#labels Featured
+Welcome to the BerkeleyAligner code repository.  We recently released version 1.1, which fixes some issues with searching for posterior thresholds, and also changes the output format to match Moses.  Enjoy.
