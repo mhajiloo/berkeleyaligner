@@ -60,6 +60,8 @@ public class Main implements Runnable {
 	public int maxTrainSentences = Integer.MAX_VALUE;
 	@Option(gloss = "Skip this number of the first training sentences")
 	public int offsetTrainingSentences = 0;
+	@Option(gloss = "Maximum length (in words) of a training sentence")
+	public static int maxTrainingLength = 200;
 	@Option(gloss = "Maximum number of the test sentences to use")
 	public int maxTestSentences = Integer.MAX_VALUE;
 	@Option(gloss = "Skip this number of the first test sentences")
@@ -374,6 +376,7 @@ public class Main implements Runnable {
 						}
 					}
 				}
+				LogInfo.logss("Dictionary loaded");
 				return dict;
 			} catch (IOException e) {
 				LogInfo.error("Problem loading dictionary file: " + dictionary);
@@ -440,6 +443,7 @@ public class Main implements Runnable {
 		if (!yield.equals(pair.getEnglishWords())) {
 			return false;
 		}
+		if(yield.size() > maxTrainingLength) return false;
 		return true;
 	}
 
